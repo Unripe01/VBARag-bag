@@ -1,23 +1,22 @@
-Attribute VB_Name = "Module2"
 Option Explicit
 
 Sub かき集め()
-Attribute かき集め.VB_ProcData.VB_Invoke_Func = " \n14"
-    
-    Application.ScreenUpdating = False
-    Sheets.Add Before:=ActiveSheet
-    Sheets(1).Select
-    Range("A1").Value = "ヘッダ"
-    Range("A2").Value = "ヘッダ２"
-
     Dim app As Application
     Dim masterBook As Workbook
     Dim masterSheet As Worksheet
+    Dim w As Worksheet
     
     Set app = Application
     Set masterBook = ActiveWorkbook
     Set masterSheet = ActiveSheet
     
+    app.ScreenUpdating = False
+    masterBook.Worksheets.Add Before:=masterSheet
+    Set w = masterBook.Sheets(1)
+    w.Range("A1").Value = "ヘッダ"
+    w.Range("A2").Value = "ヘッダ２"
+
+        
 
     '* ファイルを選ぶ
     Dim files As Variant
@@ -28,19 +27,25 @@ Attribute かき集め.VB_ProcData.VB_Invoke_Func = " \n14"
     
     Dim file As Variant
     Dim targetWorkbook As Workbook
+    Dim w1 As Worksheet
+    Dim r1 As Range
+    Dim r2 As Range
     
     For Each file In files
         
-        Set targetWorkbook = app.Workbooks.Open(file)
-        targetWorkbook.Sheets(1).Range(Range("A3"), Cells(Rows.Count, 13).End(xlUp)).Copy
+        Set targetWorkbook = app.Workbooks.Open(file, , False)
+        Set w1 = targetWorkbook.Sheets(1)
+        Set r1 = w1.Range(w1.Range("A3"), w1.Cells(w1.Rows.Count, 13).End(xlUp))
         
-        masterSheet.Activate
-        masterSheet.Range("A" & Rows.Count).End(xlUp).Offset(1, 0).PasteSpecial
+        '''masterSheet.Activate
+        Set r2 = masterSheet.Range("A" & masterSheet.Rows.Count).End(xlUp).Offset(1, 0)
         
-        targetWorkbook.Close
+        r1.Copy r2
+        
+        targetWorkbook.Close False
     Next file
     
-    Application.ScreenUpdating = True
+    app.ScreenUpdating = True
 End Sub
 
 
@@ -83,3 +88,4 @@ Function Getファイル() As FileDialogSelectedItems
     End With
 
 End Function
+
